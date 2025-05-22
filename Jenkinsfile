@@ -13,14 +13,14 @@ pipeline {
     stages {
         stage('Clean Workspace') {
             steps {
-                deleteDir()  // deletes everything in the workspace directory
+                deleteDir()
                 echo 'Workspace cleaned.'
             }
         }
 
         stage('Clone GitHub Repo') {
             steps {
-                git url: "${env.GIT_REPO_URL}", branch: 'main'
+                git url: "${env.GIT_REPO_URL}", branch: 'main', changelog: false, poll: false
             }
         }
 
@@ -28,13 +28,14 @@ pipeline {
             steps {
                 sshagent(['ssh_key']) {
                     pwsh """
-                        ./migrate.ps1 ` 
+                        \$sshKeyPath = '${env.SSH_KEY}'  # This will point to Jenkins-managed key
+                        ./migrate.ps1 `
                             -sourceVMIP '${env.SOURCE_VM_IP}' `
                             -targetVMIP '${env.TARGET_VM_IP}' `
                             -username '${env.USERNAME}' `
                             -csvFilePath '${env.CSV_PATH}' `
                             -localCsvPath '${env.LOCAL_CSV_PATH}' `
-                            -sshKeyPath '${env.SSH_KEY_PATH}'  // add if you use sshKeyPath param
+                            -sshKeyPath \$sshKeyPath
                     """
                 }
             }

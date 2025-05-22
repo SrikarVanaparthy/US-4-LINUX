@@ -15,7 +15,7 @@ Write-Host "CSV Path on Source VM: $csvFilePath"
 Write-Host "Local CSV Path: $localCsvPath"
 Write-Host "SSH Key Path: $sshKeyPath"
 
-# Use braces to prevent parsing errors
+# Use ${} to avoid colon parsing issues
 $remoteSource = "${username}@${sourceVMIP}:${csvFilePath}"
 $remoteTarget = "${username}@${targetVMIP}:/home/${username}/mydata.csv"
 
